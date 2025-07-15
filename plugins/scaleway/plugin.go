@@ -1,4 +1,4 @@
-package aws
+package scaleway
 
 import (
 	"github.com/1Password/shell-plugins/sdk"
@@ -7,20 +7,16 @@ import (
 
 func New() schema.Plugin {
 	return schema.Plugin{
-		Name: "aws",
+		Name: "scaleway",
 		Platform: schema.PlatformInfo{
-			Name:     "AWS",
-			Homepage: sdk.URL("https://aws.amazon.com/"),
+			Name:     "Scaleway",
+			Homepage: sdk.URL("https://scaleway.com"),
 		},
 		Credentials: []schema.CredentialType{
 			AccessKey(),
 		},
 		Executables: []schema.Executable{
-			AWSCLI(),
-			AWSCDKToolkit(),
-			AWSSAMCLI(),
-			eksctlCLI(),
-			awslogsCli(),
+			ScalewayCLI(),
 		},
 	}
 }
