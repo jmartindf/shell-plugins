@@ -92,18 +92,7 @@ in
           ]
         '';
         description = "CLI Packages to enable 1Password Shell Plugins for; ensure that a Shell Plugin exists by checking the docs: https://developer.1password.com/docs/cli/shell-plugins/";
-        # this is a bit of a hack to do option validation;
-        # ensure that the list of packages include only packages
-        # for which the executable has a supported 1Password Shell Plugin
-        apply =
-          package_list:
-          map (
-            package:
-            if (elem (getExeName package) supported_plugins) then
-              package
-            else
-              abort "${getExeName package} is not a valid 1Password Shell Plugin. A list of supported plugins can be found by running `op plugin list` or at: https://developer.1password.com/docs/cli/shell-plugins/"
-          ) package_list;
+
       };
     };
   };
@@ -152,15 +141,13 @@ in
         home.checks = [ plugin-support-check ];
         programs = {
           # for the Bash and Zsh home-manager modules,
-          # the initExtra option is equivalent to Fish's interactiveShellInit
-          bash.initExtra = strings.concatStringsSep "\n" posixFunctions;
-          zsh.initContent = strings.concatStringsSep "\n" posixFunctions;
+          # the initExtra/initContent option is equivalent to Fish's interactiveShellInit
+          bash.initExtra = initExtraPosix;
+          zsh.initContent = initExtraPosix;
         };
         home = {
           inherit packages;
-          sessionVariables = {
-            OP_PLUGINS_SOURCED = "1";
-          };
+           sessionVariables = { OP_PLUGIN_ALIASES_SOURCED = "1"; };
         };
       })
       (optionalAttrs (!is-home-manager) {
@@ -171,9 +158,7 @@ in
         };
         environment = {
           systemPackages = packages;
-          variables = {
-            OP_PLUGINS_SOURCED = "1";
-          };
+          variables = { OP_PLUGIN_ALIASES_SOURCED = "1"; };
         };
       })
     ]);
